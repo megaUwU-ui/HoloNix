@@ -12,7 +12,7 @@
       ./network.nix
       ./plasma6.nix
       ./jovian.nix
-      ./pkgs.nix
+      ./syspkgs.nix
       ./user.nix
     ];
 

@@ -4,13 +4,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    disko = {
+      url = "github:nix-community/disko/latest";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  inputs.disko = {
-    url = "github:nix-community/disko/latest";
-    inputs.nixpkgs.follows = "nixpkgs";
-  };
-  
   outputs = { self, nixpkgs, chaotic, disko, ... }:
     let
       inherit (chaotic.vendored) jovian;
