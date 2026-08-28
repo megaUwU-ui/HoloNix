@@ -8,12 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./btrfs-subvolumes.nix
-      ./network.nix
-      ./plasma6.nix
-      ./jovian.nix
-      ./syspkgs.nix
-      ./user.nix
+      ./modules
     ];
 
   # Enable experimental features

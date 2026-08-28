@@ -15,16 +15,14 @@
       inherit (chaotic.vendored) jovian;
     in
     {
-      nixosConfigurations = {
-        nixos = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./configuration.nix
-            jovian.nixosModules.default
-            chaotic.nixosModules.default
-            disko.nixosModules.disko
-          ];
-        };
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./configuration.nix
+          jovian.nixosModules.default
+          chaotic.nixosModules.default
+          disko.nixosModules.disko
+        ];
       };
     };
 }
