@@ -1,153 +1,97 @@
-{ config, pkgs, lib, ... }:
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
+
+{ config, pkgs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./btrfs-subvolumes.nix
+      ./network.nix
+      ./plasma6.nix
+      ./jovian.nix
+      ./pkgs.nix
+      ./user.nix
     ];
 
- 
+  # Enable experimental features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfree         = true;
 
-  ####################
-  # Boot & Kernel    #
-  ####################
-  boot.loader.systemd-boot.enable      = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout                  = 0;
-  boot.loader.limine.maxGenerations    = 5;
-  hardware.amdgpu.initrd.enable = false;
+  # Use the systemd-boot EFI boot loader.
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+    timeout = 0;
+  };
 
+  # Use latest kernel.
+  boot.kernelPackages = pkgs.linuxPackages_cachyos;
   boot.kernelParams = [ "quiet" ];
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernel.sysctl = {
-    "kernel.split_lock_mitigate" = 0;
-    "kernel.nmi_watchdog"        = 0;
-    "kernel.sched_bore"          = "1";
+  boot.plymouth.enable = true;
+  services.scx.enable = true;
+  services.scx.scheduler = "scx_lavd";
+
+  # Set your time zone.
+  time.timeZone = "Asia/Ho_Chi_Minh";
+
+  # Select internationalisation properties.
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  # Enable the X11 windowing system.
+  # You can disable this if you're only using the Wayland session.
+  # services.xserver.enable = true;
+
+  # Configure keymap in X11
+  services.xserver.xkb = {
+    layout = "us";
+    variant = "";
   };
 
-  boot.initrd = {
-    systemd.enable   = true;
-    kernelModules    = [ ];
-    verbose          = false;
-  };
-  boot.plymouth.enable     = true;
-  boot.consoleLogLevel     = 0;
-  systemd.settings.Manager = {DefaultTimeoutStopSec="5s";};
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
 
-  ################
-  # FileSystems  #
-  ################
-  fileSystems."/" = {
-    options = [ "compress=zstd" ];
-  };
-
-  ############
-  # Network  #
-  ############
-  networking = {
-    networkmanager.enable = true;
-    firewall.enable       = false;
-    hostName              = "nixos";
-  };
-
-  #################
-  # Bluetooth     #
-  #################
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.settings = {
-    General = {
-      MultiProfile     = "multiple";
-      FastConnectable  = true;
-    };
-  };
-
-  #################
-  # Sound & RTKit #
-  #################
+  # Enable sound with pipewire.
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
-    enable         = true;
-    alsa.enable    = true;
+    enable = true;
+    alsa.enable = true;
     alsa.support32Bit = true;
-    pulse.enable   = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
   };
 
-  ########################
-  # Graphical & Jovian   #
-  ########################
-  services.xserver.enable            = false;
-  #services.logind.extraConfig = ''HandlePowerKey=poweroff''; #set power button to shutdown on press
-  jovian = {
-    steam.enable = true;
-    steam.autoStart = true;
-    steam.user = "steamos";
-    hardware.has.amd.gpu = true;
-    decky-loader.enable = true;
-    steamos.useSteamOSConfig = true;
-    steam.desktopSession = "cosmic";
-    
+  # Enable touchpad support (enabled default in most desktopManager).
+  # services.xserver.libinput.enable = true;
+
+  # Podman
+  virtualisation.podman = {
+  enable = true;
+  dockerCompat = true; # Creates a symlink from docker to podman
+  defaultNetwork.settings.dns_enabled = true; # Required for containers under podman-compose to be able to talk to each other.
   };
 
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
 
-  ########################
-  # Programs & Services    #
-  ########################
-  services.automatic-timezoned.enable = true;
-  zramSwap.enable = true;
-  zramSwap.algorithm = "zstd";
-  services.desktopManager.cosmic.enable = true;
-  services.flatpak.enable = true;
-  
-  
-  programs = {
-    appimage = { enable = true; binfmt = true; };
-    fish     = { enable = true; };
-    mosh     = { enable = true; };
-    tmux     = { enable = true; };
-     };
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "26.05"; # Did you read the comment?
 
-  environment.sessionVariables = {
-    PROTON_USE_NTSYNC       = "1";
-    ENABLE_HDR_WSI          = "1";
-    DXVK_HDR                = "1";
-    PROTON_ENABLE_AMD_AGS   = "1";
-    PROTON_ENABLE_NVAPI     = "1";
-    ENABLE_GAMESCOPE_WSI    = "1";
-    STEAM_MULTIPLE_XWAYLANDS = "1";
-  };
-
-  ###################
-  # Virtualization  #
-  ###################
-  virtualisation.docker.enable      = true;
-  virtualisation.docker.enableOnBoot = false;
-  virtualisation.libvirtd.enable = true;
-
-  ###############
-  # Users       #
-  ###############
-  users.users.steamos = {
-    isNormalUser = true;
-    description  = "SteamOS user";
-    extraGroups  = [ "networkmanager" "wheel" "docker" "video" "seat" "audio" "libvirtd"];
-    password     = "steamos";
-  };
-
-  #################
-  # Security      #
-  #################
-  security.sudo.wheelNeedsPassword = false;
-  security.polkit.enable           = true;
-  services.seatd.enable            = true;
-  services.openssh.enable          = true;
-
-  ######################
-  ######################
-
-  ########################
-  # System State Version #
-  ########################
-  system.stateVersion = "24.11";
 }
