@@ -23,7 +23,6 @@ SteamOS like experience on NixOS. Clean quiet boot like on SteamDeck. Two second
     nix-channel --add https://channels.nixos.org/nixpkgs-unstable
     nix-channel update
     export NIX_CONFIG="experimental-features = flakes"
-    export NIX_PATH="nixpkgs=/root/.nix-defexpr/channels/nixos"
     nixos-rebuild --switch
     nixos-install --flake /mnt/etc/nixos#nixos
     ```
