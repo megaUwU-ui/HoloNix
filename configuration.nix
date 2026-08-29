@@ -22,8 +22,8 @@
   };
 
   # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_cachyos;
-  boot.kernelParams = [ "quiet" ];
+  #boot.kernelPackages = pkgs.linuxPackages_cachyos;
+  #boot.kernelParams = [ "quiet" ];
   boot.plymouth.enable = true;
   services.scx.enable = true;
   services.scx.scheduler = "scx_lavd";
