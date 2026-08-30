@@ -21,7 +21,12 @@
     vlc
     libreoffice-qt
     github-desktop
+    suwayomi
     ];
+  };
+
+  nixpkgs.config.packageOverrides = pkgs: {
+    suwayomi = pkgs.callPackage ./my-pkgs/suwayomi.nix { };
   };
 
   # Fish shell
