@@ -11,22 +11,21 @@
     hashedPassword = "$y$j9T$ZNVqwOtvAy2l1LFM2kkH10$uF/ozROPiAkJK0jBL5xMrcyqXFla6SYQyhbYMNYx/DC";
     extraGroups = [ "networkmanager" "wheel" "podman" ];
     packages = with pkgs; [
-    # kdePackages.kate
-    #  thunderbird
-    android-tools
-    scrcpy
-    spicetify-cli
-    element-desktop
-    qbittorrent
-    vlc
-    libreoffice-qt
-    github-desktop
-    suwayomi
+      android-tools
+      scrcpy
+      spicetify-cli
+      element-desktop
+      qbittorrent
+      vlc
+      libreoffice-qt
+      suwayomi
+      xdman
     ];
   };
 
   nixpkgs.config.packageOverrides = pkgs: {
     suwayomi = pkgs.callPackage ./my-pkgs/suwayomi.nix { };
+    xdman = pkgs.callPackage ./my-pkgs/xdman.nix { };
   };
 
   # Fish shell
