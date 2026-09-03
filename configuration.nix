@@ -9,7 +9,8 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./btrfs-subvolumes.nix
-      ./modules
+      ./holo
+      ./user
     ];
 
   # Enable experimental features

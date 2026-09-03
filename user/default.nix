@@ -24,8 +24,8 @@
   };
 
   nixpkgs.config.packageOverrides = pkgs: {
-    suwayomi = pkgs.callPackage ./my-pkgs/suwayomi.nix { };
-    xdman = pkgs.callPackage ./my-pkgs/xdman.nix { };
+    suwayomi = pkgs.callPackage ./suwayomi.nix { };
+    xdman = pkgs.callPackage ./xdman.nix { };
   };
 
   # Fish shell
